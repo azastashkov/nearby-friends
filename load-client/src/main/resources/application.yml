@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+api:
+  base-url: ${API_BASE_URL:http://localhost}
+
+websocket:
+  url: ${WEBSOCKET_URL:ws://localhost/ws/nearby}
+
+simulated:
+  users: ${SIMULATED_USERS:1000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: load-client
