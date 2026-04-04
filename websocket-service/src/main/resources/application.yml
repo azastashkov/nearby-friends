@@ -1,0 +1,42 @@
+server:
+  port: ${SERVER_PORT:8086}
+
+spring:
+  application:
+    name: websocket-service
+  data:
+    redis:
+      host: ${REDIS_CACHE_HOST:localhost}
+      port: ${REDIS_CACHE_PORT:6379}
+
+redis:
+  pubsub:
+    nodes:
+      - redis-pubsub-1:6379
+      - redis-pubsub-2:6379
+      - redis-pubsub-3:6379
+    default-nodes: '["redis-pubsub-1:6379","redis-pubsub-2:6379","redis-pubsub-3:6379"]'
+
+zookeeper:
+  connect-string: ${ZOOKEEPER_CONNECT_STRING:localhost:2181}
+  ring-path: /config/pub_sub_ring
+
+jwt:
+  secret: ${JWT_SECRET:default-dev-secret-key-must-be-at-least-32-bytes-long!!}
+
+services:
+  user-service-url: ${USER_SERVICE_URL:http://localhost:8082/api/users}
+  location-service-url: ${LOCATION_SERVICE_URL:http://localhost:8084}
+
+nearby:
+  radius-miles: 5.0
+  cache-ttl-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: websocket-service
