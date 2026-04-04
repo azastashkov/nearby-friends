@@ -11,10 +11,7 @@ spring:
 
 redis:
   pubsub:
-    nodes:
-      - redis-pubsub-1:6379
-      - redis-pubsub-2:6379
-      - redis-pubsub-3:6379
+    nodes: ${REDIS_PUBSUB_NODES:redis-pubsub-1:6379,redis-pubsub-2:6379,redis-pubsub-3:6379}
     default-nodes: '["redis-pubsub-1:6379","redis-pubsub-2:6379","redis-pubsub-3:6379"]'
 
 zookeeper:

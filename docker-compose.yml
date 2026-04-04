@@ -18,7 +18,7 @@ services:
       websocket-service-2:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:80/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -45,7 +45,7 @@ services:
       - "9042:9042"
     environment:
       CASSANDRA_CLUSTER_NAME: nearby_friends_cluster
-      CASSANDRA_DC: dc1
+      CASSANDRA_DC: datacenter1
     volumes:
       - cassandradata:/var/lib/cassandra
     healthcheck:
@@ -101,6 +101,7 @@ services:
       - "2181:2181"
     environment:
       ZOO_ADMINSERVER_ENABLED: "false"
+      ZOO_4LW_COMMANDS_WHITELIST: "ruok,srvr,stat,mntr"
     healthcheck:
       test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
       interval: 10s
@@ -215,7 +216,7 @@ services:
       SERVER_PORT: 8080
       SPRING_CASSANDRA_CONTACT_POINTS: cassandra
       SPRING_CASSANDRA_PORT: 9042
-      SPRING_CASSANDRA_LOCAL_DATACENTER: dc1
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
       SPRING_CASSANDRA_KEYSPACE_NAME: nearby_friends
     depends_on:
       cassandra:
@@ -237,7 +238,7 @@ services:
       SERVER_PORT: 8080
       SPRING_CASSANDRA_CONTACT_POINTS: cassandra
       SPRING_CASSANDRA_PORT: 9042
-      SPRING_CASSANDRA_LOCAL_DATACENTER: dc1
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
       SPRING_CASSANDRA_KEYSPACE_NAME: nearby_friends
     depends_on:
       cassandra:

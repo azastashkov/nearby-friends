@@ -7,7 +7,7 @@ spring:
   cassandra:
     contact-points: ${SPRING_CASSANDRA_CONTACT_POINTS:localhost}
     port: ${SPRING_CASSANDRA_PORT:9042}
-    local-datacenter: ${SPRING_CASSANDRA_LOCAL_DATACENTER:dc1}
+    local-datacenter: ${SPRING_CASSANDRA_LOCAL_DATACENTER:datacenter1}
     keyspace-name: ${SPRING_CASSANDRA_KEYSPACE_NAME:nearby_friends}
     schema-action: ${SPRING_CASSANDRA_SCHEMA_ACTION:create_if_not_exists}
 

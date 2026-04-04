@@ -32,7 +32,7 @@ public class PubSubService {
     private final Map<String, StringRedisTemplate> templates = new ConcurrentHashMap<>();
     private final Map<String, SubscriptionInfo> activeSubscriptions = new ConcurrentHashMap<>();
 
-    @Value("${redis.pubsub.nodes}")
+    @Value("#{'${redis.pubsub.nodes}'.split(',')}")
     private List<String> pubsubNodes;
 
     private record SubscriptionInfo(String nodeAddress, MessageListener listener, ChannelTopic topic) {}

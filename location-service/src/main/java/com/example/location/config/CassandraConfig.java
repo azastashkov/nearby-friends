@@ -19,7 +19,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     @Value("${spring.cassandra.keyspace-name:nearby_friends}")
     private String keyspaceName;
 
-    @Value("${spring.cassandra.local-datacenter:dc1}")
+    @Value("${spring.cassandra.local-datacenter:datacenter1}")
     private String localDatacenter;
 
     @Override protected String getKeyspaceName() { return keyspaceName; }
