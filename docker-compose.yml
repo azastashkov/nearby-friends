@@ -1,0 +1,390 @@
+services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api-gateway-1:
+        condition: service_healthy
+      api-gateway-2:
+        condition: service_healthy
+      websocket-service-1:
+        condition: service_healthy
+      websocket-service-2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgresql:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: nearby_friends
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cassandra:
+    image: cassandra:4
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: nearby_friends_cluster
+      CASSANDRA_DC: dc1
+    volumes:
+      - cassandradata:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE KEYSPACES'"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  redis-cache:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-pubsub-1:
+    image: redis:7
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-pubsub-2:
+    image: redis:7
+    ports:
+      - "6381:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-pubsub-3:
+    image: redis:7
+    ports:
+      - "6382:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  zookeeper:
+    image: zookeeper:3.9
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_ADMINSERVER_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zoonavigator:
+    image: elkozmon/zoonavigator
+    ports:
+      - "9000:9000"
+    environment:
+      HTTP_PORT: 9000
+      AUTO_CONNECT_CONNECTION_STRING: zookeeper:2181
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheusdata:/prometheus
+    depends_on:
+      api-gateway-1:
+        condition: service_healthy
+      api-gateway-2:
+        condition: service_healthy
+      user-service-1:
+        condition: service_healthy
+      user-service-2:
+        condition: service_healthy
+      location-service-1:
+        condition: service_healthy
+      location-service-2:
+        condition: service_healthy
+      websocket-service-1:
+        condition: service_healthy
+      websocket-service-2:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  # ── Application Services ────────────────────────────────────────────
+
+  user-service-1:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/nearby_friends
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: nearby-friends-jwt-secret-key-that-is-long-enough-for-hmac-sha256
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  user-service-2:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/nearby_friends
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: nearby-friends-jwt-secret-key-that-is-long-enough-for-hmac-sha256
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  location-service-1:
+    build:
+      context: .
+      dockerfile: location-service/Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_LOCAL_DATACENTER: dc1
+      SPRING_CASSANDRA_KEYSPACE_NAME: nearby_friends
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  location-service-2:
+    build:
+      context: .
+      dockerfile: location-service/Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_LOCAL_DATACENTER: dc1
+      SPRING_CASSANDRA_KEYSPACE_NAME: nearby_friends
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  api-gateway-1:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      JWT_SECRET: nearby-friends-jwt-secret-key-that-is-long-enough-for-hmac-sha256
+      USER_SERVICE_URI: http://user-service-1:8080
+      LOCATION_SERVICE_URI: http://location-service-1:8080
+    depends_on:
+      user-service-1:
+        condition: service_healthy
+      user-service-2:
+        condition: service_healthy
+      location-service-1:
+        condition: service_healthy
+      location-service-2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  api-gateway-2:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      SERVER_PORT: 8080
+      JWT_SECRET: nearby-friends-jwt-secret-key-that-is-long-enough-for-hmac-sha256
+      USER_SERVICE_URI: http://user-service-2:8080
+      LOCATION_SERVICE_URI: http://location-service-2:8080
+    depends_on:
+      user-service-1:
+        condition: service_healthy
+      user-service-2:
+        condition: service_healthy
+      location-service-1:
+        condition: service_healthy
+      location-service-2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  websocket-service-1:
+    build:
+      context: .
+      dockerfile: websocket-service/Dockerfile
+    ports:
+      - "8086:8080"
+    environment:
+      SERVER_PORT: 8080
+      JWT_SECRET: nearby-friends-jwt-secret-key-that-is-long-enough-for-hmac-sha256
+      REDIS_CACHE_HOST: redis-cache
+      REDIS_CACHE_PORT: 6379
+      ZOOKEEPER_CONNECT_STRING: zookeeper:2181
+      USER_SERVICE_URL: http://user-service-1:8080/api/users
+      LOCATION_SERVICE_URL: http://location-service-1:8080
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+      redis-pubsub-1:
+        condition: service_healthy
+      redis-pubsub-2:
+        condition: service_healthy
+      redis-pubsub-3:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  websocket-service-2:
+    build:
+      context: .
+      dockerfile: websocket-service/Dockerfile
+    ports:
+      - "8087:8080"
+    environment:
+      SERVER_PORT: 8080
+      JWT_SECRET: nearby-friends-jwt-secret-key-that-is-long-enough-for-hmac-sha256
+      REDIS_CACHE_HOST: redis-cache
+      REDIS_CACHE_PORT: 6379
+      ZOOKEEPER_CONNECT_STRING: zookeeper:2181
+      USER_SERVICE_URL: http://user-service-1:8080/api/users
+      LOCATION_SERVICE_URL: http://location-service-1:8080
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+      redis-pubsub-1:
+        condition: service_healthy
+      redis-pubsub-2:
+        condition: service_healthy
+      redis-pubsub-3:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Test Profile ────────────────────────────────────────────────────
+
+  load-client:
+    build:
+      context: .
+      dockerfile: load-client/Dockerfile
+    profiles:
+      - test
+    environment:
+      API_BASE_URL: http://nginx
+      WEBSOCKET_URL: ws://nginx/ws/nearby
+      SIMULATED_USERS: 1000
+    depends_on:
+      nginx:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  cassandradata:
+  prometheusdata:
+  grafanadata:
