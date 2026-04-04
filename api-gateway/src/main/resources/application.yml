@@ -1,0 +1,29 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE_URI:http://localhost:8082}
+          predicates:
+            - Path=/api/users/**
+        - id: location-service
+          uri: ${LOCATION_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/api/locations/**
+
+jwt:
+  secret: ${JWT_SECRET:default-dev-secret-key-must-be-at-least-32-bytes-long!!}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: api-gateway
