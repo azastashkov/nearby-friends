@@ -1,0 +1,280 @@
+<mxfile host="app.diagrams.net" modified="2026-04-04T00:00:00.000Z" agent="Claude" version="24.0.0" type="device">
+  <diagram id="nearby-friends-architecture" name="Architecture">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- ── Client ────────────────────────────────────────────── -->
+        <mxCell id="client" value="Client" style="shape=mxgraph.ios7.icons.smartphone;sketch=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;whiteSpace=wrap;html=1;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="60" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Load Test Client ──────────────────────────────────── -->
+        <mxCell id="load-client" value="Load Test Client&#xa;(test profile)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;dashPattern=8 4;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="20" y="530" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Nginx ─────────────────────────────────────────────── -->
+        <mxCell id="nginx" value="Nginx&#xa;Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="240" y="370" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ── API Gateways ──────────────────────────────────────── -->
+        <mxCell id="api-gw-1" value="API Gateway 1&#xa;:8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="240" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-gw-2" value="API Gateway 2&#xa;:8081" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="310" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ── WebSocket Services ────────────────────────────────── -->
+        <mxCell id="ws-1" value="WebSocket&#xa;Service 1&#xa;:8086" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="430" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ws-2" value="WebSocket&#xa;Service 2&#xa;:8087" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="500" y="510" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ── User Services ─────────────────────────────────────── -->
+        <mxCell id="user-svc-1" value="User Service 1&#xa;:8082" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="180" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="user-svc-2" value="User Service 2&#xa;:8083" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="250" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Location Services ─────────────────────────────────── -->
+        <mxCell id="loc-svc-1" value="Location Service 1&#xa;:8084" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="330" width="140" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="loc-svc-2" value="Location Service 2&#xa;:8085" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="400" width="140" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ── PostgreSQL ────────────────────────────────────────── -->
+        <mxCell id="postgresql" value="PostgreSQL&#xa;:5432" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="180" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Cassandra ─────────────────────────────────────────── -->
+        <mxCell id="cassandra" value="Cassandra&#xa;:9042" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="340" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Redis Cache ───────────────────────────────────────── -->
+        <mxCell id="redis-cache" value="Redis Cache&#xa;:6379" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="500" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Redis Pub/Sub Nodes ────────────────────────────────── -->
+        <mxCell id="redis-ps-1" value="Redis&#xa;Pub/Sub 1&#xa;:6380" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="610" width="100" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-ps-2" value="Redis&#xa;Pub/Sub 2&#xa;:6381" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="900" y="610" width="100" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-ps-3" value="Redis&#xa;Pub/Sub 3&#xa;:6382" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="610" width="100" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- ── ZooKeeper ─────────────────────────────────────────── -->
+        <mxCell id="zookeeper" value="ZooKeeper&#xa;:2181" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="780" y="730" width="120" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Prometheus ────────────────────────────────────────── -->
+        <mxCell id="prometheus" value="Prometheus&#xa;:9090" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="240" y="730" width="120" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Grafana ───────────────────────────────────────────── -->
+        <mxCell id="grafana" value="Grafana&#xa;:3000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="730" width="120" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ── ZooNavigator ──────────────────────────────────────── -->
+        <mxCell id="zoonavigator" value="ZooNavigator&#xa;:9000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="960" y="730" width="120" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- ══════════════════════════════════════════════════════ -->
+        <!-- ── CONNECTIONS ───────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════ -->
+
+        <!-- Client → Nginx -->
+        <mxCell id="e1" value="HTTP / WS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="client" target="nginx">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Load Client → Nginx -->
+        <mxCell id="e1b" value="HTTP / WS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;dashed=1;" edge="1" parent="1" source="load-client" target="nginx">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Nginx → API Gateway 1 -->
+        <mxCell id="e2a" value="/api/ (round-robin)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="nginx" target="api-gw-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Nginx → API Gateway 2 -->
+        <mxCell id="e2b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="nginx" target="api-gw-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Nginx → WebSocket Service 1 -->
+        <mxCell id="e3a" value="/ws/ (ip_hash sticky)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="nginx" target="ws-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Nginx → WebSocket Service 2 -->
+        <mxCell id="e3b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="nginx" target="ws-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API Gateway 1 → User Service 1 -->
+        <mxCell id="e4a" value="REST" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="api-gw-1" target="user-svc-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API Gateway 2 → User Service 2 -->
+        <mxCell id="e4b" value="REST" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="api-gw-2" target="user-svc-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API Gateway 1 → Location Service 1 -->
+        <mxCell id="e5a" value="REST" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="api-gw-1" target="loc-svc-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API Gateway 2 → Location Service 2 -->
+        <mxCell id="e5b" value="REST" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="api-gw-2" target="loc-svc-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- User Service → PostgreSQL -->
+        <mxCell id="e6a" value="JDBC" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="user-svc-1" target="postgresql">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="user-svc-2" target="postgresql">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Location Service → Cassandra -->
+        <mxCell id="e7a" value="CQL" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="loc-svc-1" target="cassandra">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="loc-svc-2" target="cassandra">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- WebSocket Service → Redis Cache -->
+        <mxCell id="e8a" value="GET/SET location" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-1" target="redis-cache">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-2" target="redis-cache">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- WebSocket Service → Redis Pub/Sub -->
+        <mxCell id="e9a" value="PUBLISH/SUBSCRIBE" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-1" target="redis-ps-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-1" target="redis-ps-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9c" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-2" target="redis-ps-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9d" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-2" target="redis-ps-3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- WebSocket Service → ZooKeeper -->
+        <mxCell id="e10a" value="read hash ring" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-1" target="zookeeper">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontSize=10;" edge="1" parent="1" source="ws-2" target="zookeeper">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- WebSocket Service → User Service (GET friends) -->
+        <mxCell id="e11a" value="GET friends (REST)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;fontColor=#333333;fontSize=10;dashed=1;dashPattern=4 4;" edge="1" parent="1" source="ws-1" target="user-svc-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- WebSocket Service → Location Service (POST history async) -->
+        <mxCell id="e12a" value="POST history (async)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;fontColor=#333333;fontSize=10;dashed=1;dashPattern=4 4;" edge="1" parent="1" source="ws-2" target="loc-svc-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Prometheus → All services (scrape) -->
+        <mxCell id="e13a" value="scrape /actuator/prometheus" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontColor=#666666;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="api-gw-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13b" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="api-gw-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13c" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="user-svc-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="205"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13d" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="user-svc-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13e" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="loc-svc-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13f" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="loc-svc-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13g" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="ws-1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13h" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontSize=9;dashed=1;" edge="1" parent="1" source="prometheus" target="ws-2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Grafana → Prometheus -->
+        <mxCell id="e14" value="query" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontColor=#666666;fontSize=10;" edge="1" parent="1" source="grafana" target="prometheus">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ZooNavigator → ZooKeeper -->
+        <mxCell id="e15" value="browse" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d6b656;fontColor=#666666;fontSize=10;" edge="1" parent="1" source="zoonavigator" target="zookeeper">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ── Legend ────────────────────────────────────────────── -->
+        <mxCell id="legend-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="520" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-title" value="Legend" style="text;html=1;fontSize=12;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="525" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-svc" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1175" y="555" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-svc-label" value="Application Service" style="text;html=1;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1215" y="555" width="130" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-db" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1175" y="585" width="30" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-db-label" value="Database / Cache" style="text;html=1;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1215" y="588" width="130" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-infra" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1175" y="620" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-infra-label" value="Infrastructure" style="text;html=1;fontSize=10;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1215" y="620" width="130" height="20" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
