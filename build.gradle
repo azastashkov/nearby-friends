@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.4' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+    id 'groovy'
+}
+
+allprojects {
+    group = 'com.example'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'io.micrometer:micrometer-registry-prometheus'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'org.apache.groovy:groovy-all:4.0.27'
+        testImplementation platform('org.spockframework:spock-bom:2.4-M4-groovy-4.0')
+        testImplementation 'org.spockframework:spock-core'
+        testImplementation 'org.spockframework:spock-spring'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    sourceSets {
+        test {
+            groovy {
+                srcDirs = ['src/test/groovy']
+            }
+        }
+    }
+}

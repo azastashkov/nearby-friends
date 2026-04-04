@@ -1,0 +1,7 @@
+rootProject.name = 'nearby-friends'
+
+include 'api-gateway'
+include 'user-service'
+include 'location-service'
+include 'websocket-service'
+include 'load-client'
