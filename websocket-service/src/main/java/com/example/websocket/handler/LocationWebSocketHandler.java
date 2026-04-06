@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +26,12 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class LocationWebSocketHandler extends TextWebSocketHandler {
@@ -38,6 +44,8 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
     private final SecretKey jwtKey;
     private final ConcurrentHashMap<String, SessionState> sessions = new ConcurrentHashMap<>();
+    private final AtomicInteger activeConnections;
+    private final Counter connectionsTotal;
 
     private static class SessionState {
         final String userId;
@@ -56,6 +64,7 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
                                      PubSubService pubSubService,
                                      WebClient.Builder webClientBuilder,
                                      ObjectMapper objectMapper,
+                                     MeterRegistry meterRegistry,
                                      @Value("${jwt.secret}") String jwtSecret,
                                      @Value("${services.user-service-url}") String userServiceUrl,
                                      @Value("${services.location-service-url}") String locationServiceUrl) {
@@ -65,6 +74,8 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
         this.locationServiceClient = webClientBuilder.clone().baseUrl(locationServiceUrl).build();
         this.objectMapper = objectMapper;
         this.jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        this.activeConnections = meterRegistry.gauge("ws.connections.active", new AtomicInteger(0));
+        this.connectionsTotal = meterRegistry.counter("ws.connections.total");
     }
 
     @Override
@@ -80,6 +91,8 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
         var session = new ConcurrentWebSocketSessionDecorator(rawSession, 5000, 65536);
         var state = new SessionState(userId, session);
         sessions.put(rawSession.getId(), state);
+        activeConnections.incrementAndGet();
+        connectionsTotal.increment();
 
         List<String> friendIds = fetchFriendIds(userId);
         for (String friendId : friendIds) {
@@ -114,6 +127,7 @@ public class LocationWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession rawSession, CloseStatus status) {
         SessionState state = sessions.remove(rawSession.getId());
         if (state != null) {
+            activeConnections.decrementAndGet();
             for (String friendId : state.subscribedFriends) pubSubService.unsubscribe(friendId);
             log.info("WebSocket disconnected: userId={}", state.userId);
         }

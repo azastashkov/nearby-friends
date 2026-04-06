@@ -3,6 +3,8 @@ package com.example.websocket.service;
 import com.example.websocket.dto.LocationUpdate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class PubSubService {
@@ -27,6 +30,9 @@ public class PubSubService {
 
     private final ZookeeperService zookeeperService;
     private final ObjectMapper objectMapper;
+    private final Counter publishCounter;
+    private final Counter subscribeCounter;
+    private final AtomicInteger activeChannels;
     private final Map<String, LettuceConnectionFactory> connectionFactories = new ConcurrentHashMap<>();
     private final Map<String, RedisMessageListenerContainer> containers = new ConcurrentHashMap<>();
     private final Map<String, StringRedisTemplate> templates = new ConcurrentHashMap<>();
@@ -37,9 +43,12 @@ public class PubSubService {
 
     private record SubscriptionInfo(String nodeAddress, MessageListener listener, ChannelTopic topic) {}
 
-    public PubSubService(ZookeeperService zookeeperService, ObjectMapper objectMapper) {
+    public PubSubService(ZookeeperService zookeeperService, ObjectMapper objectMapper, MeterRegistry meterRegistry) {
         this.zookeeperService = zookeeperService;
         this.objectMapper = objectMapper;
+        this.publishCounter = meterRegistry.counter("ws.pubsub.publish");
+        this.subscribeCounter = meterRegistry.counter("ws.pubsub.received");
+        this.activeChannels = meterRegistry.gauge("ws.pubsub.channels.active", new AtomicInteger(0));
     }
 
     @PostConstruct
@@ -69,19 +78,28 @@ public class PubSubService {
         try {
             String json = objectMapper.writeValueAsString(update);
             template.convertAndSend(CHANNEL_PREFIX + userId, json);
+            publishCounter.increment();
         } catch (JsonProcessingException e) { log.error("Failed to serialize location update", e); }
     }
 
     public void subscribe(String userId, MessageListener listener) {
         String nodeAddress = zookeeperService.getRing().getNode(userId);
         ChannelTopic topic = new ChannelTopic(CHANNEL_PREFIX + userId);
-        containers.get(nodeAddress).addMessageListener(listener, topic);
-        activeSubscriptions.put(userId, new SubscriptionInfo(nodeAddress, listener, topic));
+        MessageListener instrumentedListener = (message, pattern) -> {
+            subscribeCounter.increment();
+            listener.onMessage(message, pattern);
+        };
+        containers.get(nodeAddress).addMessageListener(instrumentedListener, topic);
+        activeSubscriptions.put(userId, new SubscriptionInfo(nodeAddress, instrumentedListener, topic));
+        activeChannels.incrementAndGet();
     }
 
     public void unsubscribe(String userId) {
         SubscriptionInfo info = activeSubscriptions.remove(userId);
-        if (info != null) containers.get(info.nodeAddress()).removeMessageListener(info.listener(), info.topic());
+        if (info != null) {
+            containers.get(info.nodeAddress()).removeMessageListener(info.listener(), info.topic());
+            activeChannels.decrementAndGet();
+        }
     }
 
     @PreDestroy

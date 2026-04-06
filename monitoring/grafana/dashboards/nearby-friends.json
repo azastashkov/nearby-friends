@@ -69,13 +69,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(spring_websocket_sessions{application=\"websocket-service\"}) or sum(ws_connections_active{application=\"websocket-service\"}) or sum(websocket_sessions_active{job=\"websocket-service\"})",
+          "expr": "sum(ws_connections_active{job=\"websocket-service\"})",
           "legendFormat": "Total Active Sessions"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "spring_websocket_sessions{application=\"websocket-service\"} or ws_connections_active{job=\"websocket-service\"}",
+          "expr": "ws_connections_active{job=\"websocket-service\"}",
           "legendFormat": "{{instance}}"
         }
       ]
@@ -124,13 +124,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(http_server_requests_seconds_count{uri=\"/ws/nearby\", job=\"websocket-service\"}[1m]))",
+          "expr": "sum(rate(ws_connections_total_total{job=\"websocket-service\"}[1m]))",
           "legendFormat": "Connection Rate (total)"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(http_server_requests_seconds_count{uri=\"/ws/nearby\", job=\"websocket-service\"}[1m])",
+          "expr": "rate(ws_connections_total_total{job=\"websocket-service\"}[1m])",
           "legendFormat": "{{instance}}"
         }
       ]
@@ -187,13 +187,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(http_server_requests_seconds_count{uri=~\"/api/location.*\", method=\"POST\", job=\"location-service\"}[1m]))",
+          "expr": "sum(rate(http_server_requests_seconds_count{uri=~\"/api/locations/.*\", method=\"POST\", job=\"location-service\"}[1m]))",
           "legendFormat": "Published (total)"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(http_server_requests_seconds_count{uri=~\"/api/location.*\", method=\"POST\", job=\"location-service\"}[1m])",
+          "expr": "rate(http_server_requests_seconds_count{uri=~\"/api/locations/.*\", method=\"POST\", job=\"location-service\"}[1m])",
           "legendFormat": "{{instance}}"
         }
       ]
@@ -242,13 +242,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(spring_integration_channel_send_seconds_count{name=~\".*location.*\", job=\"websocket-service\"}[1m]))",
+          "expr": "sum(rate(ws_pubsub_received_total{job=\"websocket-service\"}[1m]))",
           "legendFormat": "Received via Pub/Sub (total)"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(spring_integration_channel_send_seconds_count{name=~\".*location.*\", job=\"websocket-service\"}[1m])",
+          "expr": "rate(ws_pubsub_received_total{job=\"websocket-service\"}[1m])",
           "legendFormat": "{{instance}}"
         }
       ]
@@ -305,13 +305,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(spring_data_redis_publish_seconds_count{job=\"websocket-service\"}[1m])",
+          "expr": "rate(ws_pubsub_publish_total{job=\"websocket-service\"}[1m])",
           "legendFormat": "Publish — {{instance}}"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(spring_data_redis_subscribe_seconds_count{job=\"websocket-service\"}[1m])",
+          "expr": "rate(ws_pubsub_received_total{job=\"websocket-service\"}[1m])",
           "legendFormat": "Subscribe — {{instance}}"
         }
       ]
@@ -354,7 +354,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "count(count by (__name__) ({__name__=~\"spring_data_redis_.*\", job=\"websocket-service\"}))",
+          "expr": "sum(ws_pubsub_channels_active{job=\"websocket-service\"})",
           "legendFormat": "Active Channels"
         }
       ]
@@ -432,19 +432,19 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.50, sum(rate(http_server_requests_seconds_bucket{uri=~\"/api/location.*\", job=\"location-service\"}[1m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(http_server_requests_seconds_bucket{uri=~\"/api/locations/.*\", job=\"location-service\"}[1m])) by (le))",
           "legendFormat": "p50"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{uri=~\"/api/location.*\", job=\"location-service\"}[1m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{uri=~\"/api/locations/.*\", job=\"location-service\"}[1m])) by (le))",
           "legendFormat": "p95"
         },
         {
           "refId": "C",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{uri=~\"/api/location.*\", job=\"location-service\"}[1m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{uri=~\"/api/locations/.*\", job=\"location-service\"}[1m])) by (le))",
           "legendFormat": "p99"
         }
       ]
@@ -493,7 +493,7 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(increase(http_server_requests_seconds_bucket{uri=~\"/api/location.*\", job=\"location-service\"}[1m])) by (le)",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{uri=~\"/api/locations/.*\", job=\"location-service\"}[1m])) by (le)",
           "legendFormat": "{{le}}",
           "format": "heatmap"
         }

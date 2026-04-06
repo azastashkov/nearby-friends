@@ -21,8 +21,8 @@ public class MetricsReporter {
         this.failedConnections = registry.counter("loadtest.connections.failed");
         this.updatesSent = registry.counter("loadtest.updates.sent");
         this.updatesReceived = registry.counter("loadtest.updates.received");
-        this.latencyTimer = Timer.builder("loadtest.latency.seconds")
-                .publishPercentiles(0.5, 0.95, 0.99)
+        this.latencyTimer = Timer.builder("loadtest.latency")
+                .publishPercentileHistogram()
                 .register(registry);
     }
 
