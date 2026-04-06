@@ -18,14 +18,12 @@ public class UserSimulator {
     private final String userId;
     private final String jwtToken;
     private final String wsUrl;
-    private final double clusterLat;
-    private final double clusterLng;
     private final MetricsReporter metrics;
     private final ScheduledExecutorService scheduler;
 
     private WebSocketClient wsClient;
-    private volatile double currentLat;
-    private volatile double currentLng;
+    private double currentLat;
+    private double currentLng;
     private ScheduledFuture<?> updateTask;
 
     public UserSimulator(String userId, String jwtToken, String wsUrl,
@@ -34,8 +32,6 @@ public class UserSimulator {
         this.userId = userId;
         this.jwtToken = jwtToken;
         this.wsUrl = wsUrl;
-        this.clusterLat = clusterLat;
-        this.clusterLng = clusterLng;
         this.metrics = metrics;
         this.scheduler = scheduler;
         this.currentLat = clusterLat + (ThreadLocalRandom.current().nextDouble() - 0.5) * 0.06;
@@ -87,7 +83,7 @@ public class UserSimulator {
         }
     }
 
-    private void sendLocationUpdate() {
+    private synchronized void sendLocationUpdate() {
         if (wsClient == null || !wsClient.isOpen()) return;
         currentLat += (ThreadLocalRandom.current().nextDouble() - 0.5) * 0.002;
         currentLng += (ThreadLocalRandom.current().nextDouble() - 0.5) * 0.002;
