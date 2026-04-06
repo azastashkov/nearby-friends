@@ -1,6 +1,5 @@
 package com.example.loadtest;
 
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,9 +7,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 public class LoadTestApplication implements CommandLineRunner {
@@ -50,12 +58,10 @@ public class LoadTestApplication implements CommandLineRunner {
                         .uri("/api/users/register")
                         .bodyValue(Map.of("username", username, "password", password))
                         .retrieve().bodyToMono(Map.class).block();
+            } catch (WebClientResponseException.Conflict e) {
+                log.debug("User {} already exists, will login", i);
             } catch (Exception e) {
-                if (e.getMessage() != null && e.getMessage().contains("409")) {
-                    log.debug("User {} already exists, will login", i);
-                } else {
-                    log.warn("Failed to register user {}: {}", i, e.getMessage());
-                }
+                log.warn("Failed to register user {}: {}", i, e.getMessage());
             }
         }
         log.info("Registration phase complete for {} users", simulatedUsers);
