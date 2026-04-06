@@ -1,10 +1,17 @@
 package com.example.user.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.Instant;
 
 @Entity
 @Table(name = "friendships")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Friendship {
     @EmbeddedId
     private FriendshipId id;
@@ -12,11 +19,5 @@ public class Friendship {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    public Friendship() {}
     public Friendship(FriendshipId id) { this.id = id; }
-
-    public FriendshipId getId() { return id; }
-    public void setId(FriendshipId id) { this.id = id; }
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

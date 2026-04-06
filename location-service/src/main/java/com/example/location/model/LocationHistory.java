@@ -1,5 +1,9 @@
 package com.example.location.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.cassandra.core.cql.Ordering;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.Column;
@@ -10,6 +14,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Table("location_history")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LocationHistory {
 
     @PrimaryKeyColumn(name = "user_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
@@ -23,22 +31,4 @@ public class LocationHistory {
 
     @Column("longitude")
     private double longitude;
-
-    public LocationHistory() {}
-
-    public LocationHistory(UUID userId, Instant timestamp, double latitude, double longitude) {
-        this.userId = userId;
-        this.timestamp = timestamp;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    public UUID getUserId() { return userId; }
-    public void setUserId(UUID userId) { this.userId = userId; }
-    public Instant getTimestamp() { return timestamp; }
-    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
-    public double getLatitude() { return latitude; }
-    public void setLatitude(double latitude) { this.latitude = latitude; }
-    public double getLongitude() { return longitude; }
-    public void setLongitude(double longitude) { this.longitude = longitude; }
 }
