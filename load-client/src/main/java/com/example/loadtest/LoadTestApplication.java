@@ -38,32 +38,42 @@ public class LoadTestApplication implements CommandLineRunner {
         WebClient webClient = WebClient.builder().baseUrl(apiBaseUrl).build();
 
         log.info("Phase 1: Registering {} users...", simulatedUsers);
-        Map<String, String> usernames = new LinkedHashMap<>();
+        List<String> usernameList = new ArrayList<>();
+        List<String> passwordList = new ArrayList<>();
         for (int i = 0; i < simulatedUsers; i++) {
+            String username = "loadtest_user_" + i;
+            String password = "pass_" + i;
+            usernameList.add(username);
+            passwordList.add(password);
             try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> response = webClient.post()
+                webClient.post()
                         .uri("/api/users/register")
-                        .bodyValue(Map.of("username", "loadtest_user_" + i, "password", "pass_" + i))
+                        .bodyValue(Map.of("username", username, "password", password))
                         .retrieve().bodyToMono(Map.class).block();
-                usernames.put(response.get("id").toString(), "loadtest_user_" + i);
-            } catch (Exception e) { log.warn("Failed to register user {}: {}", i, e.getMessage()); }
+            } catch (Exception e) {
+                if (e.getMessage() != null && e.getMessage().contains("409")) {
+                    log.debug("User {} already exists, will login", i);
+                } else {
+                    log.warn("Failed to register user {}: {}", i, e.getMessage());
+                }
+            }
         }
-        log.info("Registered {} users", usernames.size());
+        log.info("Registration phase complete for {} users", simulatedUsers);
 
         log.info("Phase 2: Logging in...");
         Map<String, String> tokens = new LinkedHashMap<>();
-        int idx = 0;
-        for (var entry : usernames.entrySet()) {
+        Map<String, String> usernames = new LinkedHashMap<>();
+        for (int i = 0; i < usernameList.size(); i++) {
             try {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> response = webClient.post()
                         .uri("/api/users/login")
-                        .bodyValue(Map.of("username", entry.getValue(), "password", "pass_" + idx))
+                        .bodyValue(Map.of("username", usernameList.get(i), "password", passwordList.get(i)))
                         .retrieve().bodyToMono(Map.class).block();
-                tokens.put(entry.getKey(), response.get("token").toString());
-            } catch (Exception e) { log.warn("Failed to login {}: {}", entry.getValue(), e.getMessage()); }
-            idx++;
+                String userId = response.get("userId").toString();
+                tokens.put(userId, response.get("token").toString());
+                usernames.put(userId, usernameList.get(i));
+            } catch (Exception e) { log.warn("Failed to login {}: {}", usernameList.get(i), e.getMessage()); }
         }
         log.info("Collected {} tokens", tokens.size());
 
