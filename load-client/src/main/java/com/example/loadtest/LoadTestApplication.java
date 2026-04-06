@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -36,8 +37,12 @@ public class LoadTestApplication implements CommandLineRunner {
     @Value("${simulated.users:1000}") private int simulatedUsers;
 
     private final MetricsReporter metrics;
+    private final ConfigurableApplicationContext context;
 
-    public LoadTestApplication(MetricsReporter metrics) { this.metrics = metrics; }
+    public LoadTestApplication(MetricsReporter metrics, ConfigurableApplicationContext context) {
+        this.metrics = metrics;
+        this.context = context;
+    }
 
     public static void main(String[] args) { SpringApplication.run(LoadTestApplication.class, args); }
 
@@ -123,7 +128,14 @@ public class LoadTestApplication implements CommandLineRunner {
 
         connectPool.shutdown();
         connectPool.awaitTermination(5, TimeUnit.MINUTES);
-        log.info("All connections established. Load test running.");
-        Thread.currentThread().join();
+        log.info("All connections established. Load test running for 5 minutes.");
+
+        Thread.sleep(TimeUnit.MINUTES.toMillis(5));
+
+        log.info("Load test complete. Disconnecting...");
+        simulators.forEach(UserSimulator::disconnect);
+        scheduler.shutdown();
+        log.info("All users disconnected. Exiting.");
+        SpringApplication.exit(context, () -> 0);
     }
 }
