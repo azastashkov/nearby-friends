@@ -124,13 +124,13 @@
         {
           "refId": "A",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "sum(rate(ws_connections_total_total{job=\"websocket-service\"}[1m]))",
+          "expr": "sum(rate(ws_connections_total{job=\"websocket-service\"}[1m]))",
           "legendFormat": "Connection Rate (total)"
         },
         {
           "refId": "B",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "rate(ws_connections_total_total{job=\"websocket-service\"}[1m])",
+          "expr": "rate(ws_connections_total{job=\"websocket-service\"}[1m])",
           "legendFormat": "{{instance}}"
         }
       ]
